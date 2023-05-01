@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Listing;
 use Illuminate\Http\Request;
 
@@ -12,17 +13,21 @@ class ListingController extends Controller
         $this->authorizeResource(Listing::class, 'listing');
     }
 
-    
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return inertia(
             'Listing/Index',
             [
+                'filters' => $request->only([
+                    'priceFrom', 'priceTo', 'beds', 'baths', 'areaFrom', 'areaTo'
+                ]),
                 'listings' => Listing::orderByDesc('created_at')
                     ->paginate(10)
+                    ->withQueryString()
             ]
         );
     }
