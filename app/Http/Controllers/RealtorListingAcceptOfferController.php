@@ -8,15 +8,16 @@ use App\Models\Offer;
 class RealtorListingAcceptOfferController extends Controller
 {
     public function __invoke(Offer $offer)
-    {
+    {$listing = $offer->listing;
+        $this->authorize('update', $listing);
         // Accept selected offer
         $offer->update(['accepted_at' => now()]);
 
-        $offer->listing->sold_at = now();
-        $offer->listing->save();
+        $listing->listing->sold_at = now();
+        $listing->listing->save();
 
         // Reject all other offers
-        $offer->listing->offers()->except($offer)
+        $listing->listing->offers()->except($offer)
             ->update(['rejected_at' => now()]);
 
         return redirect()->back()
